@@ -139,9 +139,9 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation('org.simpleframework:simple-xml:2.7.1') { exclude group: 'stax', module: 'stax-api' exclude group: 'xpp3', module: 'xpp3' }
-    implementation(ext: 'aar', name: 'dlna-core', group: 'fongmi', version: 'release')
-    implementation(ext: 'aar', name: 'dlna-dmc', group: 'fongmi', version: 'release')
-    implementation(ext: 'aar', name: 'dlna-dmr', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-core-release', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-dmc-release', group: 'fongmi', version: 'release')
+    implementation(ext: 'aar', name: 'dlna-dmr-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-common-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-container-release', group: 'fongmi', version: 'release')
     implementation(ext: 'aar', name: 'lib-database-release', group: 'fongmi', version: 'release')
