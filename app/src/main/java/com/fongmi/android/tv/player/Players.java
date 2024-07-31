@@ -140,14 +140,14 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
         MediaControllerCompat.setMediaController(activity, session.getController());
     }
 
-    public void set(PlayerView exo, IjkVideoView ijk) {
+    public void init(PlayerView exo, IjkVideoView ijk) {
         releaseExo();
         releaseIjk();
-        setupExo(exo);
-        setupIjk(ijk);
+        initExo(exo);
+        initIjk(ijk);
     }
 
-    private void setupExo(PlayerView view) {
+    private void initExo(PlayerView view) {
         exoPlayer = new ExoPlayer.Builder(App.get()).setLoadControl(ExoUtil.buildLoadControl()).setTrackSelector(ExoUtil.buildTrackSelector()).setRenderersFactory(ExoUtil.buildRenderersFactory(decode)).setMediaSourceFactory(ExoUtil.buildMediaSourceFactory()).build();
         exoPlayer.setAudioAttributes(AudioAttributes.DEFAULT, true);
         exoPlayer.addAnalyticsListener(new EventLogger());
@@ -158,7 +158,7 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
         view.setPlayer(exoPlayer);
     }
 
-    private void setupIjk(IjkVideoView view) {
+    private void initIjk(IjkVideoView view) {
         ijkPlayer = view.render(Setting.getRender()).decode(decode);
         ijkPlayer.addListener(this);
         ijkPlayer.setPlayer(player);

@@ -432,7 +432,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
     }
 
     private void setVideoView() {
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         if (isPort() && ResUtil.isLand(this)) enterFullscreen();
         mBinding.control.action.reset.setText(ResUtil.getStringArray(R.array.select_reset)[Setting.getReset()]);
         mBinding.video.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> mPiP.update(getActivity(), view));
@@ -924,7 +924,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
 
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         setDecodeView();
         setR1Callback();
         onRefresh();
