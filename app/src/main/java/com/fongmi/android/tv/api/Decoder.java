@@ -35,21 +35,21 @@ public class Decoder {
     }
 
     private static String fix(String url, String data) {
-        if (url.startsWith("file") || url.startsWith("assets")) url = UrlUtil.convert(url);
+        url = UrlUtil.convert(url);
         Matcher matcher = JS_URI.matcher(data);
-        while (matcher.find()) {
-            String ext = matcher.group(0);
-            String t = ext.replace("\"./", "\"" + UrlUtil.resolve(url, "./"));
-            t = t.replace("\"../", "\"" + UrlUtil.resolve(url, "../"));
-            t = t.replace("./", "__JS1__");
-            t = t.replace("../", "__JS2__");
-            data = data.replace(ext, t);
-        }
+        while (matcher.find()) data = replace(url, data, matcher.group());
         if (data.contains("../")) data = data.replace("../", UrlUtil.resolve(url, "../"));
         if (data.contains("./")) data = data.replace("./", UrlUtil.resolve(url, "./"));
         if (data.contains("__JS1__")) data = data.replace("__JS1__", "./");
         if (data.contains("__JS2__")) data = data.replace("__JS2__", "../");
         return data;
+    }
+
+    private static String replace(String url, String data, String ext) {
+        String t = ext.replace("\"./", "\"" + UrlUtil.resolve(url, "./"));
+        t = t.replace("\"../", "\"" + UrlUtil.resolve(url, "../"));
+        t = t.replace("./", "__JS1__").replace("../", "__JS2__");
+        return data.replace(ext, t);
     }
 
     public static String getExt(String ext) {
