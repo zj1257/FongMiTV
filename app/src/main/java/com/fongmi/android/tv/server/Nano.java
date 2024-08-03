@@ -9,7 +9,6 @@ import com.fongmi.android.tv.server.process.Media;
 import com.fongmi.android.tv.server.process.Process;
 import com.fongmi.android.tv.server.process.Proxy;
 import com.github.catvod.utils.Asset;
-import com.github.catvod.utils.Util;
 import com.google.common.net.HttpHeaders;
 
 import java.io.InputStream;
@@ -72,7 +71,6 @@ public class Nano extends NanoHTTPD {
         if (url.startsWith("/go")) return go();
         if (url.startsWith("/tvbus")) return success(LiveConfig.getResp());
         if (url.startsWith("/device")) return success(Device.get().toString());
-        if (url.startsWith("/license")) return success(new String(Util.decode(url.substring(9), Util.URL_SAFE)));
         for (Process process : process) if (process.isRequest(session, url)) return process.doResponse(session, url, files);
         return getAssets(url.substring(1));
     }
