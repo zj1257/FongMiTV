@@ -43,7 +43,7 @@ public class RequestInterceptor implements Interceptor {
         String auth = url.queryParameter("auth");
         if (user != null) userMap.put(url.host(), user);
         if (auth != null) authMap.put(url.host(), auth);
-        if (authMap.containsKey(url.host()) && auth == null) builder.url(url + "&auth=" + authMap.get(url.host()));
+        if (authMap.containsKey(url.host()) && auth == null) builder.url(url + (url.querySize() == 0 ? "?" : "&") + "auth=" + authMap.get(url.host()));
         if (userMap.containsKey(url.host())) builder.header(HttpHeaders.AUTHORIZATION, Util.basic(userMap.get(url.host())));
     }
 }
