@@ -647,8 +647,10 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
             showEpg(item);
         } else {
             mGroup.setPosition(mChannelAdapter.setSelected(item.group(mGroup)));
+            mPlayers.setPlayer(getPlayerType(item.getPlayerType()));
             setArtwork(item.getLogo());
             mChannel = item;
+            setPlayerView();
             showInfo();
             hideUI();
             fetch();
