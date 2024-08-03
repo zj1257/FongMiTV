@@ -81,8 +81,10 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
     private DanmakuView danmuView;
     private ExoPlayer exoPlayer;
     private ParseJob parseJob;
+    private List<Sub> subs;
     private String format;
     private String url;
+    private Drm drm;
     private Sub sub;
 
     private long position;
@@ -169,12 +171,6 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
         danmuView = view;
     }
 
-    public void setSub(Sub sub) {
-        this.sub = sub;
-        if (isIjk()) return;
-        setMediaSource();
-    }
-
     public ExoPlayer exo() {
         return exoPlayer;
     }
@@ -183,16 +179,26 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
         return ijkPlayer;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers == null ? new HashMap<>() : checkUa(headers);
+    public MediaSessionCompat getSession() {
+        return session;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public MediaSessionCompat getSession() {
-        return session;
+    public Map<String, String> getHeaders() {
+        return headers == null ? new HashMap<>() : headers;
+    }
+
+    public void setSub(Sub sub) {
+        this.sub = sub;
+        if (isIjk()) return;
+        setMediaSource();
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     public void setMetadata(MediaMetadataCompat metadata) {
@@ -238,6 +244,8 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
     public void clear() {
         headers = null;
         format = null;
+        subs = null;
+        drm = null;
         url = null;
     }
 
@@ -521,8 +529,8 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
         parseJob = null;
     }
 
-    private void setMediaSource() {
-        setMediaSource(headers, url, format, null, new ArrayList<>(), Constant.TIMEOUT_PLAY);
+    public void setMediaSource() {
+        setMediaSource(headers, url, format, drm, subs, Constant.TIMEOUT_PLAY);
     }
 
     public void setMediaSource(String url) {
@@ -543,7 +551,7 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
 
     private void setMediaSource(Map<String, String> headers, String url, String format, Drm drm, List<Sub> subs, int timeout) {
         if (isIjk() && ijkPlayer != null) ijkPlayer.setMediaSource(IjkUtil.getSource(this.headers = checkUa(headers), this.url = url), position);
-        if (isExo() && exoPlayer != null) exoPlayer.setMediaItem(ExoUtil.getMediaItem(this.headers = checkUa(headers), UrlUtil.uri(this.url = url), ExoUtil.getMimeType(this.format = format, error), drm, checkSub(subs), decode), position);
+        if (isExo() && exoPlayer != null) exoPlayer.setMediaItem(ExoUtil.getMediaItem(this.headers = checkUa(headers), UrlUtil.uri(this.url = url), this.format = format, this.drm = drm, checkSub(this.subs = subs), decode), position);
         if (isExo() && exoPlayer != null) exoPlayer.prepare();
         Logger.t(TAG).d(error + "," + url);
         App.post(runnable, timeout);
@@ -600,7 +608,7 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
     }
 
     private List<Sub> checkSub(List<Sub> subs) {
-        if (sub == null) return subs;
+        if (sub == null) return new ArrayList<>();
         subs.add(0, sub);
         return subs;
     }

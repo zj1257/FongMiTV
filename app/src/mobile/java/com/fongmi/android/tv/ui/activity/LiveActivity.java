@@ -469,9 +469,9 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
         mPlayers.init(getExo(), getIjk());
+        mPlayers.setMediaSource();
         setDecodeView();
         setR1Callback();
-        fetch();
     }
 
     private boolean onChoose() {
@@ -865,9 +865,15 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorEvent(ErrorEvent event) {
         if (addErrorCount() > 20) onErrorEnd(event);
-        else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
         else if (mPlayers.addRetry() > event.getRetry()) checkError(event);
+        else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
+        else if (event.isFormat() && mPlayers.isExo()) onErrorFormat(event);
         else fetch();
+    }
+
+    private void onErrorFormat(ErrorEvent event) {
+        mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
+        mPlayers.setMediaSource();
     }
 
     private void checkError(ErrorEvent event) {
