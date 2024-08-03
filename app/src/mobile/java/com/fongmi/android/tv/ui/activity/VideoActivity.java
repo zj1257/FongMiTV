@@ -1349,6 +1349,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
             onReset(true);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            checkPlayImg(false);
             checkNext();
         }
     }
