@@ -608,7 +608,7 @@ public class Players implements Player.Listener, IMediaPlayer.Listener, ParseCal
     }
 
     private List<Sub> checkSub(List<Sub> subs) {
-        if (sub == null) return new ArrayList<>();
+        if (sub == null) return subs;
         subs.add(0, sub);
         return subs;
     }
