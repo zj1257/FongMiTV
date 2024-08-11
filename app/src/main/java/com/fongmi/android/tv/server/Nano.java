@@ -12,6 +12,7 @@ import com.fongmi.android.tv.server.process.Proxy;
 import com.github.catvod.utils.Asset;
 import com.google.common.net.HttpHeaders;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,6 +104,12 @@ public class Nano extends NanoHTTPD {
         } catch (Exception e) {
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_HTML, null);
         }
+    }
+
+    @Override
+    public void start() throws IOException {
+        super.start();
+        Go.start();
     }
 
     @Override
