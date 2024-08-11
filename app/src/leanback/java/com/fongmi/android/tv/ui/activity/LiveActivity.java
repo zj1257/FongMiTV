@@ -111,6 +111,11 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         return mBinding.ijk;
     }
 
+    private Drawable getDefaultArtwork() {
+        if (mPlayers.isExo()) return getExo().getDefaultArtwork();
+        return getIjk().getDefaultArtwork();
+    }
+
     private Group getKeep() {
         return (Group) mGroupAdapter.get(0);
     }
@@ -793,7 +798,7 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     private void setMetadata() {
         String title = mBinding.widget.name.getText().toString();
         String artist = mBinding.widget.play.getText().toString();
-        mPlayers.setMetadata(title, artist, mChannel.getLogo());
+        mPlayers.setMetadata(title, artist, mChannel.getLogo(), getDefaultArtwork());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
