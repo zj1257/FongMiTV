@@ -761,6 +761,18 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshEvent(RefreshEvent event) {
+        switch (event.getType()) {
+            case LIVE:
+                setLive(getHome());
+                break;
+            case PLAYER:
+                fetch();
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerEvent(PlayerEvent event) {
         switch (event.getState()) {
             case 0:
