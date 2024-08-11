@@ -688,7 +688,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
             if (length > episodeNameLength) episodeNameLength = length;
         }
         int numColumns = 10;
-        if (episodeNameLength > 60) numColumns = 1;
+        if (episodeNameLength > 40) numColumns = 1;
         if (episodeNameLength > 30) numColumns = 2;
         else if (episodeNameLength > 15) numColumns = 3;
         else if (episodeNameLength > 10) numColumns = 4;
