@@ -140,7 +140,7 @@ public class Spider extends com.github.catvod.crawler.Spider {
 
     private void initializeJS() throws Exception {
         submit(() -> {
-            if (ctx == null) createCtx();
+            createCtx();
             createObj();
             return null;
         }).get();
