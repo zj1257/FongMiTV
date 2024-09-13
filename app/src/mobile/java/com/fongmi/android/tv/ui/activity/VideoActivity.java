@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.C;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -1385,12 +1386,12 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         if (addErrorCount() > 20) onErrorEnd(event);
         else if (mPlayers.addRetry() > event.getRetry()) checkError(event);
         else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
-        else if (event.isFormat() && mPlayers.isExo()) onErrorFormat(event);
+        else if (event.isExo() && mPlayers.isExo()) onExoCheck(event);
         else onRefresh();
     }
 
-    private void onErrorFormat(ErrorEvent event) {
-        mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
+    private void onExoCheck(ErrorEvent event) {
+        if (event.getCode() == PlaybackException.ERROR_CODE_IO_UNSPECIFIED || event.getCode() >= PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED && event.getCode() <= PlaybackException.ERROR_CODE_PARSING_MANIFEST_UNSUPPORTED) mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
         mPlayers.setMediaSource();
     }
 

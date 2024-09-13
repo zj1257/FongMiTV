@@ -14,6 +14,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media3.common.C;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 import androidx.viewbinding.ViewBinding;
@@ -372,12 +373,12 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     public void onErrorEvent(ErrorEvent event) {
         if (mPlayers.addRetry() > event.getRetry()) onError(event);
         else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
-        else if (event.isFormat() && mPlayers.isExo()) onErrorFormat(event);
+        else if (event.isExo() && mPlayers.isExo()) onExoCheck(event);
         else onReset();
     }
 
-    private void onErrorFormat(ErrorEvent event) {
-        mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
+    private void onExoCheck(ErrorEvent event) {
+        if (event.getCode() == PlaybackException.ERROR_CODE_IO_UNSPECIFIED || event.getCode() >= PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED && event.getCode() <= PlaybackException.ERROR_CODE_PARSING_MANIFEST_UNSUPPORTED) mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
         mPlayers.setMediaSource();
     }
 
