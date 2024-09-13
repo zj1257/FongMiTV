@@ -1217,7 +1217,7 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
             hideUI();
         } else {
             hideInfo();
-            stopService();
+            App.post(mR0, 1000);
             setForeground(true);
             setSubtitle(Setting.getSubtitle());
             if (isStop()) finish();

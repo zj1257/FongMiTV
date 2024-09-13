@@ -1800,7 +1800,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
             hideSheet();
         } else {
             showDanmu();
-            stopService();
+            App.post(mR0, 1000);
             setForeground(true);
             setSubtitle(Setting.getSubtitle());
             if (isStop()) finish();
