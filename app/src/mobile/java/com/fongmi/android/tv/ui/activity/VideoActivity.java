@@ -64,6 +64,7 @@ import com.fongmi.android.tv.event.PlayerEvent;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.SubtitleCallback;
 import com.fongmi.android.tv.model.SiteViewModel;
+import com.fongmi.android.tv.ui.dialog.PlayerDialog;
 import com.fongmi.android.tv.utils.Downloader;
 import com.fongmi.android.tv.player.exo.ExoUtil;
 import com.fongmi.android.tv.player.Players;
@@ -125,7 +126,7 @@ import master.flame.danmaku.danmaku.model.IDisplayer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class VideoActivity extends BaseActivity implements Clock.Callback, CustomKeyDownVod.Listener, TrackDialog.Listener, ControlDialog.Listener, FlagAdapter.OnClickListener, EpisodeAdapter.OnClickListener, QualityAdapter.OnClickListener, QuickAdapter.OnClickListener, ParseAdapter.OnClickListener, SubtitleCallback, CastDialog.Listener, InfoDialog.Listener {
+public class VideoActivity extends BaseActivity implements Clock.Callback, CustomKeyDownVod.Listener, TrackDialog.Listener, PlayerDialog.Listener, ControlDialog.Listener, FlagAdapter.OnClickListener, EpisodeAdapter.OnClickListener, QualityAdapter.OnClickListener, QuickAdapter.OnClickListener, ParseAdapter.OnClickListener, SubtitleCallback, CastDialog.Listener, InfoDialog.Listener {
 
     private ActivityVideoBinding mBinding;
     private ViewGroup.LayoutParams mFrameParams;
@@ -916,11 +917,8 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
     }
 
     private void onPlayer() {
-        mPlayers.togglePlayer();
-        setPlayerView();
-        setDecodeView();
-        setR1Callback();
-        onRefresh();
+        PlayerDialog.create().select(mPlayers.getPlayer()).title(getName()).show(this);
+        hideControl();
     }
 
     private void onDecode() {
@@ -1760,6 +1758,20 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         boolean idm = IDMUtil.downloadFile(this, UrlUtil.fixDownloadUrl(mPlayers.getUrl()), title.toString(), mPlayers.getHeaders(), false, false);
         if (!idm) mPlayers.share(this, title);
         setRedirect(true);
+    }
+
+    @Override
+    public void onPlayerClick(Integer item) {
+        mPlayers.setPlayer(item);
+        setPlayerView();
+        setDecodeView();
+        setR1Callback();
+        onRefresh();
+    }
+
+    @Override
+    public void onPlayerShare(String title) {
+        this.onShare(title);
     }
 
     @Override

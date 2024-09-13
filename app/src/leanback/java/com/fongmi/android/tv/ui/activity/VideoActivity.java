@@ -71,6 +71,7 @@ import com.fongmi.android.tv.ui.custom.CustomMovement;
 import com.fongmi.android.tv.ui.dialog.DescDialog;
 import com.fongmi.android.tv.ui.dialog.EpisodeDialog;
 import com.fongmi.android.tv.ui.dialog.FileChooserDialog;
+import com.fongmi.android.tv.ui.dialog.PlayerDialog;
 import com.fongmi.android.tv.ui.dialog.TrackDialog;
 import com.fongmi.android.tv.ui.presenter.ArrayPresenter;
 import com.fongmi.android.tv.ui.presenter.EpisodePresenter;
@@ -116,7 +117,7 @@ import okhttp3.Call;
 import okhttp3.Response;
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class VideoActivity extends BaseActivity implements CustomKeyDownVod.Listener, TrackDialog.Listener, TrackDialog.ChooserListener, ArrayPresenter.OnClickListener, Clock.Callback, SubtitleCallback {
+public class VideoActivity extends BaseActivity implements CustomKeyDownVod.Listener, TrackDialog.Listener, TrackDialog.ChooserListener, PlayerDialog.Listener, ArrayPresenter.OnClickListener, Clock.Callback, SubtitleCallback {
 
     private ActivityVideoBinding mBinding;
     private ViewGroup.LayoutParams mFrameParams;
@@ -1065,10 +1066,8 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     }
 
     private void onPlayer() {
-        mPlayers.togglePlayer();
-        setPlayerView();
-        setDecodeView();
-        onRefresh();
+        PlayerDialog.create().select(mPlayers.getPlayer()).title(mBinding.widget.title.getText().toString()).show(this);
+        hideControl();
     }
 
     private void onDecode() {
@@ -1801,6 +1800,19 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     public void setSubtitle(int size) {
         getExo().getSubtitleView().setFixedTextSize(Dimension.SP, size);
         getIjk().getSubtitleView().setFixedTextSize(Dimension.SP, size);
+    }
+
+    @Override
+    public void onPlayerClick(Integer item) {
+        mPlayers.setPlayer(item);
+        setPlayerView();
+        setDecodeView();
+        onRefresh();
+    }
+
+    @Override
+    public void onPlayerShare(String title) {
+        this.onChoose();
     }
 
     @Override

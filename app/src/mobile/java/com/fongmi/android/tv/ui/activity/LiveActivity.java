@@ -59,6 +59,7 @@ import com.fongmi.android.tv.ui.dialog.CastDialog;
 import com.fongmi.android.tv.ui.dialog.InfoDialog;
 import com.fongmi.android.tv.ui.dialog.LiveDialog;
 import com.fongmi.android.tv.ui.dialog.PassDialog;
+import com.fongmi.android.tv.ui.dialog.PlayerDialog;
 import com.fongmi.android.tv.ui.dialog.SubtitleDialog;
 import com.fongmi.android.tv.ui.dialog.TrackDialog;
 import com.fongmi.android.tv.utils.Biometric;
@@ -82,7 +83,7 @@ import java.util.List;
 
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class LiveActivity extends BaseActivity implements Clock.Callback, CustomKeyDownLive.Listener, TrackDialog.Listener, Biometric.Callback, PassCallback, LiveCallback, GroupAdapter.OnClickListener, ChannelAdapter.OnClickListener, EpgDataAdapter.OnClickListener, SubtitleCallback, CastDialog.Listener, InfoDialog.Listener {
+public class LiveActivity extends BaseActivity implements Clock.Callback, CustomKeyDownLive.Listener, TrackDialog.Listener, PlayerDialog.Listener, Biometric.Callback, PassCallback, LiveCallback, GroupAdapter.OnClickListener, ChannelAdapter.OnClickListener, EpgDataAdapter.OnClickListener, SubtitleCallback, CastDialog.Listener, InfoDialog.Listener {
 
     private ActivityLiveBinding mBinding;
     private ChannelAdapter mChannelAdapter;
@@ -461,11 +462,8 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
     }
 
     private void onPlayer() {
-        mPlayers.togglePlayer();
-        Setting.putLivePlayer(mPlayers.getPlayer());
-        setPlayerView();
-        setR1Callback();
-        fetch();
+        PlayerDialog.create().select(mPlayers.getPlayer()).title(mBinding.control.title.getText().toString()).show(this);
+        hideControl();
     }
 
     private void onDecode() {
@@ -1184,6 +1182,20 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, Custom
         boolean idm = IDMUtil.downloadFile(this, UrlUtil.fixDownloadUrl(mPlayers.getUrl()), title.toString(), mPlayers.getHeaders(), false, false);
         if (!idm) mPlayers.share(this, title);
         setRedirect(true);
+    }
+
+    @Override
+    public void onPlayerClick(Integer item) {
+        mPlayers.setPlayer(item);
+        Setting.putLivePlayer(mPlayers.getPlayer());
+        setPlayerView();
+        setR1Callback();
+        fetch();
+    }
+
+    @Override
+    public void onPlayerShare(String title) {
+        this.onShare(title);
     }
 
     @Override

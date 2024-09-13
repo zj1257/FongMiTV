@@ -40,6 +40,7 @@ import com.fongmi.android.tv.player.exo.ExoUtil;
 import com.fongmi.android.tv.player.Players;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.ui.custom.CustomKeyDownCast;
+import com.fongmi.android.tv.ui.dialog.PlayerDialog;
 import com.fongmi.android.tv.ui.dialog.TrackDialog;
 import com.fongmi.android.tv.utils.Clock;
 import com.fongmi.android.tv.utils.KeyUtil;
@@ -52,7 +53,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class CastActivity extends BaseActivity implements CustomKeyDownCast.Listener, TrackDialog.Listener, RenderControl, ServiceConnection, Clock.Callback, SubtitleCallback {
+public class CastActivity extends BaseActivity implements CustomKeyDownCast.Listener, TrackDialog.Listener, PlayerDialog.Listener, RenderControl, ServiceConnection, Clock.Callback, SubtitleCallback {
 
     private ActivityCastBinding mBinding;
     private DLNARendererService mService;
@@ -215,9 +216,8 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     }
 
     private void onPlayer() {
-        mPlayers.togglePlayer();
-        setPlayerView();
-        onReset();
+        PlayerDialog.create().select(mPlayers.getPlayer()).title(mBinding.widget.title.getText().toString()).show(this);
+        hideControl();
     }
 
     private void onDecode() {
@@ -537,6 +537,19 @@ public class CastActivity extends BaseActivity implements CustomKeyDownCast.List
     public void setSubtitle(int size) {
         getExo().getSubtitleView().setFixedTextSize(Dimension.SP, size);
         getIjk().getSubtitleView().setFixedTextSize(Dimension.SP, size);
+    }
+
+    @Override
+    public void onPlayerClick(Integer item) {
+        mPlayers.setPlayer(item);
+        setPlayerView();
+        onReset();
+    }
+
+    @Override
+    public void onPlayerShare(String title) {
+        if (mPlayers.isEmpty()) return;
+        mPlayers.choose(this, mBinding.widget.title.getText());
     }
 
     @Override

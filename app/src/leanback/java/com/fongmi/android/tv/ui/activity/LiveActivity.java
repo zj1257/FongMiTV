@@ -52,6 +52,7 @@ import com.fongmi.android.tv.ui.custom.CustomKeyDownLive;
 import com.fongmi.android.tv.ui.custom.CustomLiveListView;
 import com.fongmi.android.tv.ui.dialog.LiveDialog;
 import com.fongmi.android.tv.ui.dialog.PassDialog;
+import com.fongmi.android.tv.ui.dialog.PlayerDialog;
 import com.fongmi.android.tv.ui.dialog.SubtitleDialog;
 import com.fongmi.android.tv.ui.dialog.TrackDialog;
 import com.fongmi.android.tv.ui.presenter.ChannelPresenter;
@@ -73,7 +74,7 @@ import java.util.List;
 
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class LiveActivity extends BaseActivity implements Clock.Callback, GroupPresenter.OnClickListener, ChannelPresenter.OnClickListener, EpgDataPresenter.OnClickListener, CustomKeyDownLive.Listener, CustomLiveListView.Callback, TrackDialog.Listener, PassCallback, LiveCallback, SubtitleCallback {
+public class LiveActivity extends BaseActivity implements Clock.Callback, GroupPresenter.OnClickListener, ChannelPresenter.OnClickListener, EpgDataPresenter.OnClickListener, CustomKeyDownLive.Listener, CustomLiveListView.Callback, TrackDialog.Listener, PlayerDialog.Listener, PassCallback, LiveCallback, SubtitleCallback {
 
     private ActivityLiveBinding mBinding;
     private ArrayObjectAdapter mChannelAdapter;
@@ -424,10 +425,8 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     }
 
     private void onPlayer() {
-        mPlayers.togglePlayer();
-        Setting.putLivePlayer(mPlayers.getPlayer());
-        setPlayerView();
-        fetch();
+        PlayerDialog.create().select(mPlayers.getPlayer()).title(mBinding.widget.title.getText().toString()).show(this);
+        hideControl();
     }
 
     private void onDecode() {
@@ -1048,6 +1047,19 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     public void setSubtitle(int size) {
         getExo().getSubtitleView().setFixedTextSize(Dimension.SP, size);
         getIjk().getSubtitleView().setFixedTextSize(Dimension.SP, size);
+    }
+
+    @Override
+    public void onPlayerClick(Integer item) {
+        mPlayers.setPlayer(item);
+        Setting.putLivePlayer(mPlayers.getPlayer());
+        setPlayerView();
+        fetch();
+    }
+
+    @Override
+    public void onPlayerShare(String title) {
+        this.onChoose();
     }
 
     @Override
