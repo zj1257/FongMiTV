@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,6 +18,7 @@ import androidx.media3.common.C;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
+import androidx.media3.ui.SubtitleView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
@@ -44,8 +44,8 @@ import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.impl.LiveCallback;
 import com.fongmi.android.tv.impl.PassCallback;
-import com.fongmi.android.tv.impl.SubtitleCallback;
 import com.fongmi.android.tv.model.LiveViewModel;
+import com.fongmi.android.tv.player.IjkUtil;
 import com.fongmi.android.tv.player.exo.ExoUtil;
 import com.fongmi.android.tv.player.Players;
 import com.fongmi.android.tv.server.Server;
@@ -77,7 +77,7 @@ import java.util.List;
 
 import tv.danmaku.ijk.media.player.ui.IjkVideoView;
 
-public class LiveActivity extends BaseActivity implements Clock.Callback, GroupPresenter.OnClickListener, ChannelPresenter.OnClickListener, EpgDataPresenter.OnClickListener, CustomKeyDownLive.Listener, CustomLiveListView.Callback, TrackDialog.Listener, PlayerDialog.Listener, PassCallback, LiveCallback, SubtitleCallback {
+public class LiveActivity extends BaseActivity implements Clock.Callback, GroupPresenter.OnClickListener, ChannelPresenter.OnClickListener, EpgDataPresenter.OnClickListener, CustomKeyDownLive.Listener, CustomLiveListView.Callback, TrackDialog.Listener, PlayerDialog.Listener, PassCallback, LiveCallback {
 
     private ActivityLiveBinding mBinding;
     private ArrayObjectAdapter mChannelAdapter;
@@ -160,7 +160,6 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         mR4 = this::hideUI;
         Server.get().start();
         setRecyclerView();
-        setSubtitleView();
         setVideoView();
         setDisplayView();
         setViewModel();
@@ -176,6 +175,10 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         mBinding.control.text.setOnClickListener(this::onTrack);
         mBinding.control.audio.setOnClickListener(this::onTrack);
         mBinding.control.video.setOnClickListener(this::onTrack);
+        mBinding.control.speed.setUpListener(this::onSpeedAdd);
+        mBinding.control.speed.setDownListener(this::onSpeedSub);
+        mBinding.control.text.setUpListener(this::onSubtitleClick);
+        mBinding.control.text.setDownListener(this::onSubtitleClick);
         mBinding.control.home.setOnClickListener(view -> onHome());
         mBinding.control.line.setOnClickListener(view -> onLine());
         mBinding.control.scale.setOnClickListener(view -> onScale());
@@ -186,7 +189,6 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         mBinding.control.player.setOnClickListener(view -> onPlayer());
         mBinding.control.decode.setOnClickListener(view -> onDecode());
         mBinding.control.player.setOnLongClickListener(view -> onChoose());
-        mBinding.control.text.setOnLongClickListener(view -> onTextLong());
         mBinding.control.speed.setOnLongClickListener(view -> onSpeedLong());
         mBinding.video.setOnTouchListener((view, event) -> mKeyDown.onTouchEvent(event));
         mBinding.group.addOnChildViewHolderSelectedListener(new OnChildViewHolderSelectedListener() {
@@ -222,19 +224,13 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     private void setVideoView() {
         mPlayers.init(getExo(), getIjk());
         setScale(Setting.getLiveScale());
+        ExoUtil.setSubtitleView(mBinding.exo);
+        IjkUtil.setSubtitleView(mBinding.ijk);
         mBinding.control.invert.setActivated(Setting.isInvert());
         mBinding.control.across.setActivated(Setting.isAcross());
         mBinding.control.change.setActivated(Setting.isChange());
         findViewById(R.id.timeBar).setNextFocusUpId(R.id.player);
         mBinding.control.home.setVisibility(LiveConfig.isOnly() ? View.GONE : View.VISIBLE);
-    }
-
-    private void setSubtitleView() {
-        setSubtitle(Setting.getSubtitle());
-        getExo().getSubtitleView().setStyle(ExoUtil.getCaptionStyle());
-        getIjk().getSubtitleView().setStyle(ExoUtil.getCaptionStyle());
-        getExo().getSubtitleView().setApplyEmbeddedStyles(!Setting.isCaption());
-        getIjk().getSubtitleView().setApplyEmbeddedStyles(!Setting.isCaption());
     }
 
     private void setDisplayView() {
@@ -375,12 +371,6 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         hideControl();
     }
 
-    private boolean onTextLong() {
-        SubtitleDialog.create(this).show();
-        hideControl();
-        return true;
-    }
-
     private void onHome() {
         LiveDialog.create(this).show();
         hideControl();
@@ -399,6 +389,14 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
 
     private void onSpeed() {
         mBinding.control.speed.setText(mPlayers.addSpeed());
+    }
+
+    private void onSpeedAdd() {
+        mBinding.control.speed.setText(mPlayers.addSpeed(0.25f));
+    }
+
+    private void onSpeedSub() {
+        mBinding.control.speed.setText(mPlayers.subSpeed(0.25f));
     }
 
     private boolean onSpeedLong() {
@@ -714,6 +712,13 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
 
     @Override
     public void onTrackClick(Track item) {
+    }
+
+    @Override
+    public void onSubtitleClick() {
+        App.post(this::hideControl, 200);
+        SubtitleView subtitleView = mPlayers.isIjk() ? getIjk().getSubtitleView() : getExo().getSubtitleView();
+        App.post(() -> SubtitleDialog.create().view(subtitleView).full(true).show(this), 200);
     }
 
     @Override
@@ -1046,12 +1051,6 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         else if (isVisible(mBinding.widget.epg)) hideEpg();
         else if (isVisible(mBinding.control.getRoot())) hideControl();
         else onMenu();
-    }
-
-    @Override
-    public void setSubtitle(int size) {
-        getExo().getSubtitleView().setFixedTextSize(Dimension.SP, size);
-        getIjk().getSubtitleView().setFixedTextSize(Dimension.SP, size);
     }
 
     @Override
