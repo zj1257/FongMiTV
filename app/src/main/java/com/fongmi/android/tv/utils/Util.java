@@ -1,7 +1,6 @@
 package com.fongmi.android.tv.utils;
 
 import android.app.Activity;
-import android.app.UiModeManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -9,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.IBinder;
