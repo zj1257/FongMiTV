@@ -989,7 +989,7 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
         boolean visible = (!controlVisible || isLock()) && !pictureMode && !hasDialog;
         mBinding.display.clock.setVisibility(Setting.isDisplayTime() && visible  ? View.VISIBLE : View.GONE);
         mBinding.display.netspeed.setVisibility(Setting.isDisplaySpeed() && visible ? View.VISIBLE : View.GONE);
-        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && visible ? View.VISIBLE : View.GONE);
+        mBinding.display.duration.setVisibility(Setting.isDisplayDuration() && visible && (mPlayers.isVod()) ? View.VISIBLE : View.GONE);
         mBinding.display.progress.setVisibility(Setting.isDisplayMiniProgress() && visible && (mPlayers.isVod()) ? View.VISIBLE : View.GONE);
         mBinding.display.titleLayout.setVisibility(Setting.isDisplayVideoTitle()&& visible ? View.VISIBLE : View.GONE);
     }
