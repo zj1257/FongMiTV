@@ -1580,11 +1580,11 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
         getDetail(item);
     }
 
-    private void onPaused(boolean visible) {
+    private void onPaused() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mBinding.widget.exoDuration.setText(mPlayers.getDurationTime());
         mBinding.widget.exoPosition.setText(mPlayers.getPositionTime(0));
-        if (visible) showInfoAndCenter();
+        if (isFullscreen()) showInfoAndCenter();
         else hideInfoAndCenter();
         mPlayers.pause();
     }
@@ -1768,7 +1768,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     @Override
     public void onKeyCenter() {
         if (mPlayers.isPlaying()) {
-            onPaused(true);
+            onPaused();
             hideControl(false);
         } else {
             onPlay();
@@ -1826,7 +1826,7 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     protected void onPause() {
         super.onPause();
         setBackground(true);
-        onPaused(false);
+        mPlayers.pause();
         mClock.stop();
     }
 
