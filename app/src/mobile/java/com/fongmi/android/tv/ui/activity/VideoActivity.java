@@ -774,7 +774,6 @@ public class VideoActivity extends BaseActivity implements Clock.Callback, Custo
     }
 
     private boolean onCopy() {
-        Notify.show(R.string.copied);
         Util.copy(mBinding.content.getText().toString());
         return true;
     }
