@@ -198,8 +198,6 @@ public class TrackNameProvider {
                 return "VP9";
             case MimeTypes.VIDEO_DOLBY_VISION:
                 return "DOLBY";
-            case MimeTypes.VIDEO_ProRes:
-                return "ProRes";
             case MimeTypes.TEXT_SSA:
                 return "SSA";
             case MimeTypes.TEXT_VTT:
